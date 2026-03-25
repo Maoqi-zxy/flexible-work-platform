@@ -159,17 +159,17 @@ export const taskService = {
 
 // 雇主服务
 const employerService = {
-  getMyTasks: async (): Promise<any[]> => {
-    const response = await apiClient.get<ApiResponse<any[]>>('/my/tasks');
+  getMyTasks: async (): Promise<Task[]> => {
+    const response = await apiClient.get('/my/tasks');
     console.log('getMyTasks 响应:', response);
     
-    const rawTasks = response.data || [];
+    const rawTasks = (response as any).data?.data || (response as any).data || [];
     // 转换后端格式 → 前端格式
     return rawTasks.map((task: any) => ({
       id: String(task.id),
       title: task.title,
       description: task.description,
-      budget: task.budget_min || task.budget_max || 0,  // 关键：budget_min/max → budget
+      budget: task.budget_min || task.budget_max || 0,
       deadline: task.deadline,
       status: task.status,
       publisherId: String(task.enterprise_id),
@@ -177,14 +177,13 @@ const employerService = {
       skills: task.skills ? task.skills.split(',').filter((s: string) => s.trim()) : [],
       createdAt: task.created_at,
       updatedAt: task.updated_at,
-      category: task.category,
-      submissionCount: task.submission_count || 0,  // 确保 submissionCount 存在
+      submissionCount: task.submission_count || 0,
     }));
   },
   
   getTaskById: async (id: string): Promise<Task> => {
-    const response = await apiClient.get<ApiResponse<any>>(`/tasks/${id}`);
-    const rawTask = response.data || response.data?.data;
+    const response = await apiClient.get(`/tasks/${id}`);
+    const rawTask = (response as any).data?.data || (response as any).data;
     
     return {
       id: String(rawTask.id),
@@ -198,15 +197,14 @@ const employerService = {
       skills: rawTask.skills ? rawTask.skills.split(',').filter((s: string) => s.trim()) : [],
       createdAt: rawTask.created_at,
       updatedAt: rawTask.updated_at,
-      category: rawTask.category,
     };
   },
   
   getTaskSubmissions: async (taskId: string): Promise<any[]> => {
-    const response = await apiClient.get<ApiResponse<any[]>>(`/tasks/${taskId}/submissions`);
+    const response = await apiClient.get(`/tasks/${taskId}/submissions`);
     console.log('getTaskSubmissions 响应:', response);
     
-    const rawSubmissions = response.data || [];
+    const rawSubmissions = (response as any).data?.data || (response as any).data || [];
     // 转换后端格式 → 前端格式，确保 freelancer 对象存在
     return rawSubmissions.map((sub: any) => ({
       id: String(sub.id),
@@ -217,9 +215,9 @@ const employerService = {
         username: sub.freelancer_name || sub.freelancer?.username || '自由职业者',
         email: sub.freelancer_email || sub.freelancer?.email || '',
         avatar: sub.freelancer_avatar || sub.freelancer?.avatar || undefined,
-        skills: sub.freelancer_skills ? sub.freelancer_skills.split(',').filter((s: string) => s.trim()) : (sub.freelancer?.skills || []),
+        skills: sub.freelancer_skills ? sub.freelancer_skills.split(',').filter((s: string) => s.trim()) : [],
         rating: sub.freelancer_rating || sub.freelancer?.rating || undefined,
-        completedTasks: sub.freelancer_completed_tasks || sub.freelancer?.completedTasks || 0,
+        completedTasks: sub.freelancer_completed_tasks || 0,
       },
       attachmentUrls: sub.attachment_urls || sub.attachmentUrls || [],
       submittedAt: sub.submitted_at || new Date().toISOString(),
