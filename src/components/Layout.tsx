@@ -34,9 +34,14 @@ export default function Layout({ user, onLogout }: LayoutProps) {
                 任务大厅
               </Link>
               {user?.userType === 'enterprise' && (
-                <Link to="/publish" className="text-gray-700 hover:text-primary-600 font-medium transition-colors">
-                  发布任务
-                </Link>
+                <>
+                  <Link to="/publish" className="text-gray-700 hover:text-primary-600 font-medium transition-colors">
+                    发布任务
+                  </Link>
+                  <Link to="/employer/dashboard" className="text-gray-700 hover:text-primary-600 font-medium transition-colors">
+                    雇主管理
+                  </Link>
+                </>
               )}
             </nav>
 
@@ -98,6 +103,7 @@ export default function Layout({ user, onLogout }: LayoutProps) {
               <ul className="space-y-2 text-gray-400 text-sm">
                 <li><Link to="/" className="hover:text-white">任务大厅</Link></li>
                 <li><Link to="/publish" className="hover:text-white">发布任务</Link></li>
+                <li><Link to="/employer/dashboard" className="hover:text-white">雇主管理</Link></li>
                 <li><Link to="/profile" className="hover:text-white">个人中心</Link></li>
               </ul>
             </div>

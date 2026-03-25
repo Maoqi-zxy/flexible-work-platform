@@ -23,11 +23,34 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
 
     try {
       const response = await authService.login(formData);
+      console.log('登录响应:', response);
+      
+      const user = {
+        id: response.user?.id,
+        username: response.user?.username || response.user?.name,
+        email: response.user?.email,
+        role: response.user?.role,
+        userType: response.user?.role || response.user?.userType,  // 关键：从 role 映射
+        companyName: response.user?.company_name,
+        skills: response.user?.skills,
+        createdAt: response.user?.created_at || new Date().toISOString(),
+      };
+      
+      console.log('=== 登录处理 ===');
+      console.log('1. 后端返回的 response.user:', response.user);
+      console.log('2. 处理后 user 对象:', user);
+      console.log('3. user.userType 值:', user.userType);
+      console.log('================');
+      
       localStorage.setItem('token', response.token);
-      localStorage.setItem('user', JSON.stringify(response.user));
-      onLogin(response.user);
+      localStorage.setItem('user', JSON.stringify(user));
+      console.log('4. localStorage 已设置');
+      
+      onLogin(user);
+      console.log('5. onLogin 已调用，准备跳转...');
       navigate('/');
     } catch (err: any) {
+      console.error('登录失败:', err);
       setError(err.response?.data?.message || '登录失败，请检查账号密码');
     } finally {
       setLoading(false);

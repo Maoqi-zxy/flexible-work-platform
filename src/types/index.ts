@@ -41,6 +41,23 @@ export interface TaskSubmission {
   submittedAt: string;
 }
 
+// 雇主任务（包含申请数量）
+export interface EmployerTask extends Task {
+  submissionCount: number;
+}
+
+// 自由职业者信息
+export interface FreelancerProfile {
+  id: string;
+  username: string;
+  email: string;
+  phone?: string;
+  avatar?: string;
+  skills?: string[];
+  rating?: number;
+  completedTasks?: number;
+}
+
 // 登录注册接口
 export interface LoginRequest {
   email: string;

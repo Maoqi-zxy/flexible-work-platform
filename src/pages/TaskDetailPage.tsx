@@ -55,12 +55,12 @@ export default function TaskDetailPage() {
   const loadTask = async () => {
     try {
       const data = await taskService.getTaskById(id!);
+      console.log('任务详情数据:', data);
       setTask(data);
     } catch (error) {
       console.error('加载任务详情失败，使用 mock 数据:', error);
-      if (id === '1') {
-        setTask(mockTask);
-      }
+      // 找不到任务时使用 mock 数据
+      setTask(mockTask);
     } finally {
       setLoading(false);
     }
@@ -75,12 +75,13 @@ export default function TaskDetailPage() {
     setSubmitting(true);
     try {
       await taskService.submitTask(id!, submitContent);
-      alert('提交成功！等待雇主审核');
+      alert('✅ 提交成功！等待雇主审核');
       setShowSubmitModal(false);
       setSubmitContent('');
       loadTask();
     } catch (error: any) {
-      alert(error.response?.data?.message || '提交失败，请稍后重试');
+      console.error('提交失败:', error);
+      alert(error.response?.data?.message || '❌ 提交失败，请稍后重试');
     } finally {
       setSubmitting(false);
     }
@@ -161,11 +162,11 @@ export default function TaskDetailPage() {
         <div className="flex items-center p-4 bg-gray-50 rounded-lg mb-6">
           <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center mr-4">
             <span className="text-primary-600 font-bold text-lg">
-              {task.publisherName.charAt(0)}
+              {task.publisherName ? task.publisherName.charAt(0) : '企'}
             </span>
           </div>
           <div>
-            <div className="font-medium text-gray-900">{task.publisherName}</div>
+            <div className="font-medium text-gray-900">{task.publisherName || '未知企业'}</div>
             <div className="text-sm text-gray-500">任务发布者</div>
           </div>
         </div>
@@ -182,7 +183,7 @@ export default function TaskDetailPage() {
         <div className="mb-6">
           <h2 className="text-lg font-bold text-gray-900 mb-3">所需技能</h2>
           <div className="flex flex-wrap gap-2">
-            {task.skills.map((skill, index) => (
+            {(task.skills || []).map((skill, index) => (
               <span
                 key={index}
                 className="px-3 py-1 bg-primary-50 text-primary-700 text-sm rounded-full"

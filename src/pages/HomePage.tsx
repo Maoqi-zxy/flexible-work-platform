@@ -235,24 +235,30 @@ export default function HomePage() {
               </p>
               
               <div className="flex flex-wrap gap-2 mb-4">
-                {task.skills.slice(0, 3).map((skill, index) => (
-                  <span
-                    key={index}
-                    className="px-2 py-1 bg-primary-50 text-primary-700 text-xs rounded"
-                  >
-                    {skill}
-                  </span>
-                ))}
+                {(() => {
+                  // 后端返回的 skills 可能是字符串 "UI 设计，Figma,Sketch" 或数组
+                  const skillsArray = typeof task.skills === 'string' 
+                    ? task.skills.split(',').filter(s => s.trim()) 
+                    : (Array.isArray(task.skills) ? task.skills : []);
+                  return skillsArray.slice(0, 3).map((skill, index) => (
+                    <span
+                      key={index}
+                      className="px-2 py-1 bg-primary-50 text-primary-700 text-xs rounded"
+                    >
+                      {skill}
+                    </span>
+                  ));
+                })()}
               </div>
               
               <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                 <div className="flex items-center space-x-2">
                   <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
                     <span className="text-primary-600 font-medium text-sm">
-                      {task.publisherName.charAt(0)}
+                      {task.publisherName ? task.publisherName.charAt(0) : '用'}
                     </span>
                   </div>
-                  <span className="text-sm text-gray-600">{task.publisherName}</span>
+                  <span className="text-sm text-gray-600">{task.publisherName || '匿名用户'}</span>
                 </div>
                 <div className="text-primary-600 font-bold">
                   ¥{task.budget.toLocaleString()}
