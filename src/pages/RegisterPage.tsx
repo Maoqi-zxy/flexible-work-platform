@@ -49,8 +49,8 @@ export default function RegisterPage({ onRegister }: RegisterPageProps) {
         username: formData.username,
         email: formData.email,
         password: formData.password,
-        userType: formData.userType,
-        companyName: formData.userType === 'enterprise' ? formData.companyName : undefined,
+        role: formData.userType,  // 后端期望字段名：role
+        company_name: formData.userType === 'enterprise' ? formData.companyName : undefined,  // 后端期望字段名：company_name
         skills: formData.userType === 'freelancer' && formData.skills ? formData.skills.split(',').map(s => s.trim()).filter(Boolean) : undefined,
       };
 
@@ -58,15 +58,20 @@ export default function RegisterPage({ onRegister }: RegisterPageProps) {
       
       console.log('注册成功，后端返回:', result);
       
-      // AuthResponse 返回格式：{ user: { id, username, email, userType, ... }, token: string }
+      // AuthResponse 返回格式：{ user: { id, username, email, role, userType, ... }, token: string }
       const user = result.user || result;
+      // 兼容后端返回：role → userType
+      const userData = {
+        ...user,
+        userType: user.role || user.userType,
+      };
       
       localStorage.setItem('token', result.token || 'registered');
-      localStorage.setItem('user', JSON.stringify(user));
-      onRegister(user);
+      localStorage.setItem('user', JSON.stringify(userData));
+      onRegister(userData);
       
       console.log('注册成功，显示弹窗...');
-      setRegisteredUser(user);
+      setRegisteredUser(userData);
       setShowSuccessModal(true);
       // 不直接跳转，等待用户点击确认按钮
     } catch (err: any) {
