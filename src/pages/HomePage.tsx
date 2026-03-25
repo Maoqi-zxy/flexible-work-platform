@@ -31,58 +31,6 @@ const mockTasks: Task[] = [
     createdAt: '2024-03-17T14:30:00Z',
     updatedAt: '2024-03-17T14:30:00Z',
   },
-  {
-    id: '3',
-    title: '数据可视化大屏',
-    description: '为公司内部管理系统开发数据可视化大屏，需要展示实时业务数据，使用 ECharts 或 D3.js。',
-    budget: 12000,
-    deadline: '2024-04-20',
-    status: 'open',
-    publisherId: '103',
-    publisherName: '数据科技公司',
-    skills: ['数据可视化', 'ECharts', 'Vue'],
-    createdAt: '2024-03-16T09:15:00Z',
-    updatedAt: '2024-03-16T09:15:00Z',
-  },
-  {
-    id: '4',
-    title: '移动端 H5 活动页面',
-    description: '制作一个营销活动的 H5 页面，包含动画效果、互动游戏、分享功能等。需要适配各种手机型号。',
-    budget: 5000,
-    deadline: '2024-04-10',
-    status: 'open',
-    publisherId: '104',
-    publisherName: '营销广告公司',
-    skills: ['H5 开发', '动画效果', '移动端适配'],
-    createdAt: '2024-03-15T16:45:00Z',
-    updatedAt: '2024-03-15T16:45:00Z',
-  },
-  {
-    id: '5',
-    title: '后台管理系统开发',
-    description: '开发一个完整的后台管理系统，包含用户管理、权限控制、数据报表等模块。使用 React + Ant Design。',
-    budget: 20000,
-    deadline: '2024-05-15',
-    status: 'open',
-    publisherId: '105',
-    publisherName: '企业管理软件公司',
-    skills: ['React', 'Ant Design', 'TypeScript'],
-    createdAt: '2024-03-14T11:20:00Z',
-    updatedAt: '2024-03-14T11:20:00Z',
-  },
-  {
-    id: '6',
-    title: 'WordPress 主题定制',
-    description: '基于现有 WordPress 模板进行定制开发，修改样式、添加自定义功能模块。',
-    budget: 3000,
-    deadline: '2024-04-05',
-    status: 'open',
-    publisherId: '106',
-    publisherName: '内容媒体公司',
-    skills: ['WordPress', 'PHP', 'CSS'],
-    createdAt: '2024-03-13T13:00:00Z',
-    updatedAt: '2024-03-13T13:00:00Z',
-  },
 ];
 
 export default function HomePage() {
@@ -97,7 +45,6 @@ export default function HomePage() {
 
   const loadTasks = async () => {
     try {
-      // 优先尝试从 API 获取，失败则使用 mock 数据
       const data = await taskService.getTasks();
       setTasks(data);
     } catch (error) {
@@ -216,14 +163,13 @@ export default function HomePage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredTasks.map((task) => (
-            <Link key={task.id} to={`/task/${task.id}`} className="group relative">
-              {/* 卡片容器 */}
+            <Link key={task.id} to={`/task/${task.id}`} className="group block">
               <div className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 h-full flex flex-col transform hover:-translate-y-1 relative">
-                {/* 卡片顶部状态条 */}
+                {/* 顶部渐变条 */}
                 <div className="h-1.5 bg-gradient-to-r from-primary-500 to-primary-600"></div>
                 
                 <div className="p-5 flex-1 flex flex-col">
-                  {/* 状态标签和日期 */}
+                  {/* 状态和日期 */}
                   <div className="flex items-start justify-between mb-3">
                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(task.status)}`}>
                       {getStatusText(task.status)}
@@ -233,12 +179,12 @@ export default function HomePage() {
                     </span>
                   </div>
                   
-                  {/* 任务标题 */}
+                  {/* 标题 */}
                   <h3 className="text-lg font-bold text-gray-900 mb-3 group-hover:text-primary-600 transition-colors line-clamp-2">
                     {task.title}
                   </h3>
                   
-                  {/* 任务描述 */}
+                  {/* 描述 */}
                   <p className="text-gray-600 text-sm mb-4 line-clamp-3 flex-1">
                     {task.description}
                   </p>
@@ -246,7 +192,6 @@ export default function HomePage() {
                   {/* 技能标签 */}
                   <div className="flex flex-wrap gap-1.5 mb-4">
                     {(() => {
-                      // 后端返回的 skills 可能是字符串或数组，需要类型断言
                       const skillsValue = task.skills as unknown as string | string[];
                       let skillsArray: string[] = [];
                       if (typeof skillsValue === 'string') {
@@ -264,34 +209,33 @@ export default function HomePage() {
                       ));
                     })()}
                   </div>
-              
-              {/* 卡片底部：发布者和预算 */}
-              <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-auto">
-                <div className="flex items-center space-x-2">
-                  <div className="w-9 h-9 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center shadow-sm">
-                    <span className="text-white font-semibold text-sm">
-                      {task.publisherName ? task.publisherName.charAt(0) : '用'}
-                    </span>
+                  
+                  {/* 底部：发布者和预算 */}
+                  <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-auto">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-9 h-9 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center shadow-sm">
+                        <span className="text-white font-semibold text-sm">
+                          {task.publisherName ? task.publisherName.charAt(0) : '用'}
+                        </span>
+                      </div>
+                      <span className="text-sm text-gray-600 truncate max-w-[120px]">{task.publisherName || '匿名用户'}</span>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-primary-600 font-bold text-lg">¥{(task.budget || 0).toLocaleString()}</div>
+                      {(task as any).budget_max && (
+                        <div className="text-xs text-gray-400">最高 ¥{((task as any).budget_max || 0).toLocaleString()}</div>
+                      )}
+                    </div>
                   </div>
-                  <span className="text-sm text-gray-600 truncate max-w-[120px]">{task.publisherName || '匿名用户'}</span>
                 </div>
-                <div className="text-right">
-                  <div className="text-primary-600 font-bold text-lg">¥{(task.budget || 0).toLocaleString()}</div>
-                  {(task as any).budget_max && (task as any).budget_max !== (task as any).budget_min && (
-                    <div className="text-xs text-gray-400">最高 ¥{((task as any).budget_max || 0).toLocaleString()}</div>
-                  )}
+                
+                {/* 悬停箭头 */}
+                <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300">
+                  <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
                 </div>
               </div>
-            </div>
-              
-              {/* 悬停箭头 */}
-              <div className="absolute bottom-5 right-5 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300">
-                <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </div>
-            </div>
-            {/* 结束卡片容器 */}
             </Link>
           ))}
         </div>
