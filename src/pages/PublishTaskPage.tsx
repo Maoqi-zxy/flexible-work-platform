@@ -41,13 +41,15 @@ export default function PublishTaskPage() {
     setLoading(true);
 
     try {
+      const budget = Number(formData.budget);
       await taskService.createTask({
         title: formData.title,
         description: formData.description,
-        budget: Number(formData.budget),
+        category: '开发',  // 默认分类
+        budget_min: budget,
+        budget_max: budget * 1.2,  // 预算范围上浮 20%
         deadline: formData.deadline,
         skills: formData.skills.split(',').map(s => s.trim()).filter(Boolean),
-        status: 'open',
       });
       
       alert('任务发布成功！');
