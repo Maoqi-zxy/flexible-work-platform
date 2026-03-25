@@ -282,6 +282,7 @@ export default function HomePage() {
                   )}
                 </div>
               </div>
+            </div>
               
               {/* 悬停箭头 */}
               <div className="absolute bottom-5 right-5 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300">
@@ -290,6 +291,7 @@ export default function HomePage() {
                 </svg>
               </div>
             </div>
+            {/* 结束卡片容器 */}
             </Link>
           ))}
         </div>
