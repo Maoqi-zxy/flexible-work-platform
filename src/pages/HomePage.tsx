@@ -216,54 +216,80 @@ export default function HomePage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredTasks.map((task) => (
-            <Link key={task.id} to={`/task/${task.id}`} className="card block group">
-              <div className="flex items-start justify-between mb-4">
-                <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(task.status)}`}>
-                  {getStatusText(task.status)}
-                </span>
-                <span className="text-gray-500 text-sm">
-                  {new Date(task.createdAt).toLocaleDateString('zh-CN')}
-                </span>
-              </div>
-              
-              <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">
-                {task.title}
-              </h3>
-              
-              <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                {task.description}
-              </p>
-              
-              <div className="flex flex-wrap gap-2 mb-4">
-                {(() => {
-                  // 后端返回的 skills 可能是字符串 "UI 设计，Figma,Sketch" 或数组
-                  const skillsArray = typeof task.skills === 'string' 
-                    ? task.skills.split(',').filter(s => s.trim()) 
-                    : (Array.isArray(task.skills) ? task.skills : []);
-                  return skillsArray.slice(0, 3).map((skill, index) => (
-                    <span
-                      key={index}
-                      className="px-2 py-1 bg-primary-50 text-primary-700 text-xs rounded"
-                    >
-                      {skill}
+            <Link key={task.id} to={`/task/${task.id}`} className="group relative">
+              {/* 卡片容器 */}
+              <div className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 h-full flex flex-col transform hover:-translate-y-1 relative">
+                {/* 卡片顶部状态条 */}
+                <div className="h-1.5 bg-gradient-to-r from-primary-500 to-primary-600"></div>
+                
+                <div className="p-5 flex-1 flex flex-col">
+                  {/* 状态标签和日期 */}
+                  <div className="flex items-start justify-between mb-3">
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(task.status)}`}>
+                      {getStatusText(task.status)}
                     </span>
-                  ));
-                })()}
-              </div>
+                    <span className="text-gray-400 text-xs">
+                      {new Date(task.createdAt).toLocaleDateString('zh-CN')}
+                    </span>
+                  </div>
+                  
+                  {/* 任务标题 */}
+                  <h3 className="text-lg font-bold text-gray-900 mb-3 group-hover:text-primary-600 transition-colors line-clamp-2">
+                    {task.title}
+                  </h3>
+                  
+                  {/* 任务描述 */}
+                  <p className="text-gray-600 text-sm mb-4 line-clamp-3 flex-1">
+                    {task.description}
+                  </p>
+                  
+                  {/* 技能标签 */}
+                  <div className="flex flex-wrap gap-1.5 mb-4">
+                    {(() => {
+                      // 后端返回的 skills 可能是字符串或数组，需要类型断言
+                      const skillsValue = task.skills as unknown as string | string[];
+                      let skillsArray: string[] = [];
+                      if (typeof skillsValue === 'string') {
+                        skillsArray = skillsValue.split(',').map((s) => s.trim()).filter(s => s);
+                      } else if (Array.isArray(skillsValue)) {
+                        skillsArray = skillsValue;
+                      }
+                      return skillsArray.slice(0, 3).map((skill: string, index: number) => (
+                        <span
+                          key={index}
+                          className="px-2 py-1 bg-gradient-to-r from-primary-50 to-primary-100 text-primary-700 text-xs rounded-full font-medium border border-primary-200 hover:border-primary-300 transition-colors"
+                        >
+                          {skill}
+                        </span>
+                      ));
+                    })()}
+                  </div>
               
-              <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+              {/* 卡片底部：发布者和预算 */}
+              <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-auto">
                 <div className="flex items-center space-x-2">
-                  <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
-                    <span className="text-primary-600 font-medium text-sm">
+                  <div className="w-9 h-9 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center shadow-sm">
+                    <span className="text-white font-semibold text-sm">
                       {task.publisherName ? task.publisherName.charAt(0) : '用'}
                     </span>
                   </div>
-                  <span className="text-sm text-gray-600">{task.publisherName || '匿名用户'}</span>
+                  <span className="text-sm text-gray-600 truncate max-w-[120px]">{task.publisherName || '匿名用户'}</span>
                 </div>
-                <div className="text-primary-600 font-bold">
-                  ¥{task.budget.toLocaleString()}
+                <div className="text-right">
+                  <div className="text-primary-600 font-bold text-lg">¥{(task.budget || 0).toLocaleString()}</div>
+                  {(task as any).budget_max && (task as any).budget_max !== (task as any).budget_min && (
+                    <div className="text-xs text-gray-400">最高 ¥{((task as any).budget_max || 0).toLocaleString()}</div>
+                  )}
                 </div>
               </div>
+              
+              {/* 悬停箭头 */}
+              <div className="absolute bottom-5 right-5 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300">
+                <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </div>
             </Link>
           ))}
         </div>
